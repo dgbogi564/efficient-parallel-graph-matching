@@ -32,7 +32,24 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 	int * temp4_gpu;//a temporary array for data we don't need to keep for long
 	
 	/** YOUR CODE GOES BELOW (allocate GPU memory, and copy from CPU to GPU as appropriate **/
+    cudaMalloc((void **)&strongNeighbor_gpu, sizeof(int) * numVertices);
 
+    cudaMalloc((void **)&matches_gpu, sizeof(int) * numVertices);
+    cudaMemcpy(matches_gpu, matches, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+
+    cudaMalloc((void **)&src_gpu, sizeof(int) * numVertices);
+    cudaMemcpy(src_gpu, graph.src, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+
+    cudaMalloc((void **)&dst_gpu, sizeof(int) * numVertices);
+    cudaMemcpy(dst_gpu, graph.dst, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+
+    cudaMalloc((void **)&weight_gpu, sizeof(int) * numVertices);
+    cudaMemcpy(weight_gpu, graph.weight, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+
+    cudaMalloc((void **)&temp1_gpu, sizeof(int) * numVertices);
+    cudaMalloc((void **)&temp2_gpu, sizeof(int) * numVertices);
+    cudaMalloc((void **)&temp3_gpu, sizeof(int) * numVertices);
+    cudaMalloc((void **)&temp4_gpu, sizeof(int) * numVertices);
 	/** YOUR CODE GOES ABOVE **/
 	
 	
@@ -45,7 +62,7 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 
 			/** YOUR CODE GOES ABOVE (extra credit) **/
 		} else {
-			//Step 1: Get strongest neighbor for each vertex/node
+			//Step 1: Get the strongest neighbor for each vertex/node
 			int * strongNeighbor_cpu = (int *) malloc(sizeof(int) * numVertices);
 			int * strongNeighborWeight_cpu = (int *) malloc(sizeof(int) * numVertices);
 			for(int x = 0; x < numVertices; x++) {
@@ -134,7 +151,15 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 	
 	//free GPU arrays
 	/** YOUR CODE GOES BELOW **/
-
+    cudaFree(strongNeighbor_gpu);
+    cudaFree(matches_gpu);
+    cudaFree(src_gpu);
+    cudaFree(dst_gpu);
+    cudaFree(weight_gpu);
+    cudaFree(temp1_gpu);
+    cudaFree(temp2_gpu);
+    cudaFree(temp3_gpu);
+    cudaFree(temp4_gpu);
 	/** YOUR CODE GOES ABOVE **/
 	
 	cudaError_t cudaError;
