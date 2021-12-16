@@ -9,7 +9,7 @@ fi
 cd ".."
 
 make clean
-make
+make debug
 
 cd testcases || (echo "failed to cd to testcases" && exit)
 

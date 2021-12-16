@@ -27,31 +27,31 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 	int * dst_gpu;//holds the dst nodes in edge list
 	int * weight_gpu;//holds the edge weights in edge list	
 	int * temp1_gpu;//a temporary array for data we don't need to keep for long
-	int * temp2_gpu;//a temporary array for data we don't need to keep for long
+	int * temp2_gpu;//a temporary array for data we don't need to keep for longq
 	int * temp3_gpu;//a temporary array for data we don't need to keep for long
 	int * temp4_gpu;//a temporary array for data we don't need to keep for long
 	
 	/** YOUR CODE GOES BELOW (allocate GPU memory, and copy from CPU to GPU as appropriate **/
-    cudaMalloc((void **)&strongNeighbor_gpu, sizeof(int) * numVertices);
+	cudaMalloc((void **)&strongNeighbor_gpu, sizeof(int) * numVertices);
 
     cudaMalloc((void **)&matches_gpu, sizeof(int) * numVertices);
     cudaMemcpy(matches_gpu, matches, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&src_gpu, sizeof(int) * numVertices);
-    cudaMemcpy(src_gpu, graph.src, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&src_gpu, sizeof(int) * (numEdges+1));
+    cudaMemcpy(src_gpu, graph.src, sizeof(int) * (numEdges+1), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&dst_gpu, sizeof(int) * numVertices);
-    cudaMemcpy(dst_gpu, graph.dst, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&dst_gpu, sizeof(int) * (numEdges+1));
+    cudaMemcpy(dst_gpu, graph.dst, sizeof(int) * (numEdges+1), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&weight_gpu, sizeof(int) * numVertices);
-    cudaMemcpy(weight_gpu, graph.weight, sizeof(int) * numVertices, cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&weight_gpu, sizeof(int) * (numEdges+1));
+    cudaMemcpy(weight_gpu, graph.weight, sizeof(int) * (numEdges+1), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&temp1_gpu, sizeof(int) * numVertices);
-    cudaMalloc((void **)&temp2_gpu, sizeof(int) * numVertices);
-    cudaMalloc((void **)&temp3_gpu, sizeof(int) * numVertices);
-    cudaMalloc((void **)&temp4_gpu, sizeof(int) * numVertices);
+    cudaMalloc((void **)&temp1_gpu, sizeof(int) * (numEdges+1));
+    cudaMalloc((void **)&temp2_gpu, sizeof(int) * (numEdges+1));
+    cudaMalloc((void **)&temp3_gpu, sizeof(int) * (numEdges+1));
+    cudaMalloc((void **)&temp4_gpu, sizeof(int) * (numEdges+1));
 	/** YOUR CODE GOES ABOVE **/
-	
+
 	
     //matching loop
     int iter;
@@ -62,7 +62,7 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 
 			/** YOUR CODE GOES ABOVE (extra credit) **/
 		} else {
-			//Step 1: Get the strongest neighbor for each vertex/node
+			//Step 1: Get strongest neighbor for each vertex/node
 			int * strongNeighbor_cpu = (int *) malloc(sizeof(int) * numVertices);
 			int * strongNeighborWeight_cpu = (int *) malloc(sizeof(int) * numVertices);
 			for(int x = 0; x < numVertices; x++) {
@@ -105,7 +105,7 @@ int one_way_handshake(GraphData graph, int *& matches, int numthreads, bool extr
 		}
 		
 		//note: temp1 is still in use, until we're done with newEdgeLocs_gpu
-		
+
 		//Step 3c: check if we're done matching
 		int lastLoc = 0;
 		cudaMemcpy(&lastLoc, &(newEdgeLocs_gpu[numEdges]), sizeof(int), cudaMemcpyDeviceToHost);
